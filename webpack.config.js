@@ -5,7 +5,9 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-// const {NODE_ENV} = process.env;
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+const isProd = process.env.NODE_ENV === 'production';
 
 // модули которые будут запускаться с входным и выходным файлом
 module.exports = {
@@ -16,6 +18,10 @@ module.exports = {
         filename: '[name].js',
         path: path.resolve(__dirname, './build'),
         publicPath: '/'
+    },
+
+    resolve: {
+        extensions: ['.js', '.scss'],
     },
 
     // localhost сервер
@@ -32,7 +38,36 @@ module.exports = {
 
         new HtmlWebpackPlugin({
             template: './src/index.html',
-            minify: false
-        })
-    ]
+            minify: isProd // елси
+        }),
+
+        new MiniCssExtractPlugin({
+           filename: '[name].min.css'
+        }),
+    ],
+
+    // объект loader
+    module: {
+        rules: [
+            {
+                test: /.(css|s[ac]ss)$/,
+                // ПОРЯДОК ОЧЕНЬ ВАЖЕН !!! читается снизу-вверх
+                use: [
+                    isProd ? MiniCssExtractPlugin.loader : 'style-loader',
+                    'css-loader',
+                    'sass-loader'
+                ]
+            },
+            {
+                test: /.(woff(2)?|eot|otf|ttf|svg)$/,
+                exclude: /img/,
+                loader: 'file-loader',
+                options: {
+                    publicPath: '../',
+                    context: path.resolve(__dirname, 'src/assets'),
+                    name: '[path][name].[ext]'
+                }
+            }
+        ]
+    }
 }
