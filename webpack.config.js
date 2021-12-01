@@ -9,6 +9,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
 
+const TerserPlugin = require('terser-webpack-plugin');
+
 // модули которые будут запускаться с входным и выходным файлом
 module.exports = {
     // направление для билда
@@ -22,6 +24,21 @@ module.exports = {
 
     resolve: {
         extensions: ['.js', '.scss'],
+    },
+
+    //оптимизация файлов - убрать пробелы, коменты и тд
+    optimization: {
+        minimize: true,
+        minimizer: [
+            new TerserPlugin({
+                extractComments: false,
+                terserOptions: {
+                    compress: {
+                        drop_console: true
+                    }
+                }
+            })
+        ]
     },
 
     // localhost сервер
@@ -38,7 +55,7 @@ module.exports = {
 
         new HtmlWebpackPlugin({
             template: './src/index.html',
-            minify: isProd // елси
+            minify: isProd // если прод то сделать minify
         }),
 
         new MiniCssExtractPlugin({
@@ -66,6 +83,16 @@ module.exports = {
                     publicPath: '../',
                     context: path.resolve(__dirname, 'src/assets'),
                     name: '[path][name].[ext]'
+                }
+            },
+            {
+                test: /\.m?js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: "babel-loader",
+                    options: {
+                        babelrc: true
+                    }
                 }
             }
         ]
