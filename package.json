@@ -11,6 +11,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/plugin-transform-runtime": "^7.16.4",
     "@babel/preset-env": "^7.16.4",
     "babel-loader": "^8.2.3",
     "clean-webpack-plugin": "^4.0.0",
@@ -35,6 +37,6 @@
     "IE 11",
     "not dead",
     "not op_mini all",
-    "> 1%"
+    "> 0.25%"
   ]
 }
